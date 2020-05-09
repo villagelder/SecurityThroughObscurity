@@ -3,6 +3,7 @@ package com.company;
 import java.time.chrono.MinguoDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -20,30 +21,36 @@ public class RoomChecker {
     }
 
     private static String getRoomName(String encryptedString) {
-        return null;
+        List<String> encryptionSegmentList = segmentEncryption(encryptedString);
+        encryptionSegmentList.remove(encryptionSegmentList.size() - 1);
+        StringBuilder sb = new StringBuilder();
 
+        Iterator it = encryptionSegmentList.iterator();
+
+        while (it.hasNext()) {
+            sb.append((String) it.next());
+            if (it.hasNext())
+                sb.append("-");
+        }
+
+        return sb.toString();
     }
 
     private static List<String> segmentEncryption(String encryptedString) {
         String shortEnc = encryptedString.substring(0, encryptedString.indexOf("["));
-        List<String> parsedList = new ArrayList<>(Arrays.asList(shortEnc.split("-")));
+        return new ArrayList<>(Arrays.asList(shortEnc.split("-")));
 
-        return parsedList;
     }
 
-    private static int getSectorID(String encryptedString) {
-        return 0;
-    }
+    private static int getSectorID(String encryptedString) throws NumberFormatException {
+        List<String> encryptionSegmentList = segmentEncryption(encryptedString);
+        int id = Integer.parseInt(encryptionSegmentList.get(encryptionSegmentList.size() - 1));
 
-    private static String readCharacterStream(Stream<Character> cs) {
-        StringBuilder sb = new StringBuilder();
-
-        cs.forEach(ch -> sb.append(ch));
-        return sb.toString();
+        return id;
     }
 
     public static void main(String[] args) {
-        System.out.println("\n\nParsed: " + segmentEncryption("aaaaa-bbb-z-y-x-123[abxyz]"));
+        System.out.println("\n\nRoom Name: " + getRoomName("a-b-c-d-e-f-g-h-987[abcde]"));
     }
 
 }

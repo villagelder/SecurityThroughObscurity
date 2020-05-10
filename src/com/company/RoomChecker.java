@@ -37,28 +37,6 @@ public class RoomChecker {
         return alphaMap;
     }
 
-    //didn't work probably because of user login requirement
-//    private static void readInput() throws MalformedURLException {
-//        List<String> checksumList = new ArrayList<>();
-//
-//        URL adventofcode = new URL("https://adventofcode.com/2016/day/4/input");
-//
-//        try {
-//            BufferedReader br = new BufferedReader(new InputStreamReader(adventofcode.openStream()));
-//
-//            String inputLine;
-//            while ((inputLine = br.readLine()) != null)
-//                checksumList.add(inputLine);
-//
-//            br.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        for (String str : checksumList)
-//            System.out.print(str);
-//    }
-
     private static List<String> readChecksumData() throws IOException {
         InputStream input = RoomChecker.class.getResourceAsStream("checksum.dat");
         BufferedReader br = new BufferedReader(new InputStreamReader(input));
@@ -73,6 +51,16 @@ public class RoomChecker {
             }
         }
         return checksumList;
+    }
+
+    private static void writeDecipheredData(List<String> dList) throws IOException {
+
+        FileWriter writer = new FileWriter("deciphered.dat");
+        for (String str : dList) {
+            writer.write(str + System.lineSeparator());
+        }
+        writer.close();
+
     }
 
     private static LinkedList<Map.Entry<Character, Integer>> sortMapByValuesDesc(Map<Character, Integer> unsortedMap) {
@@ -129,15 +117,6 @@ public class RoomChecker {
 
         LinkedList<Map.Entry<Character, Integer>> checksumSortedList = countAndSort(encryptedString);
 
-        System.out.print("\nentry list");
-        for (Map.Entry<Character, Integer> entry : checksumSortedList)
-            System.out.print("\n" + entry.getKey());
-
-        System.out.print("\n\nchar Array");
-
-        for (Character c : characterArray)
-            System.out.print("\n" + c);
-
         int i = 0;
         for (Character ch : characterArray) {
 
@@ -181,6 +160,68 @@ public class RoomChecker {
         return sb.toString();
     }
 
+    public static void deciperChecksumData() {
+        List<String> decipheredList = new ArrayList<>();
+
+        try {
+            List<String> checksumList = readChecksumData();
+
+            for (String checksum : checksumList) {
+                decipheredList.add(decipherRoomName(checksum));
+            }
+
+            writeDecipheredData(decipheredList);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private static String decipherRoomName(String encryptedString) {
+        int sectorId = getSectorID(encryptedString);
+        String roomName = getRoomName(encryptedString);
+
+        char[] charArray = roomName.toCharArray();
+        char[] decipheredArray = new char[charArray.length];
+
+        for (int i = 0; i < charArray.length; i++) {
+            decipheredArray[i] = deciper(charArray[i], sectorId);
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        for (char c : decipheredArray)
+            sb.append(c);
+
+        return sb.toString() + "-" + sectorId;
+    }
+
+    private static char deciper(char ch, int shift) {
+        int min = 'a';
+        int max = 'z';
+        int n = 0;
+        char result;
+
+        int r = shift % 26;
+
+        if (ch == '-') {
+            return ' ';
+        } else if (r == 0) {
+            return ch;
+        } else {
+
+            if ((ch + r) > max) {
+                n = ch + r - max + min - 1;
+            } else {
+                n = ch + r;
+            }
+        }
+
+        result = (char) n;
+        return result;
+    }
+
     private static List<String> segmentEncryption(String encryptedString) {
         String shortEnc = encryptedString.substring(0, encryptedString.indexOf("["));
         return new ArrayList<String>(Arrays.asList(shortEnc.split("-")));
@@ -193,8 +234,8 @@ public class RoomChecker {
         return id;
     }
 
-    public static void main(String[] args) throws IOException {
-        System.out.println("Total: " + getChecksumDataAndSumRealIDs());
+    public static void main(String[] args) {
+        deciperChecksumData();
 
     }
 

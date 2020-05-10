@@ -10,12 +10,12 @@ public class Main {
     public static void main(String[] args) {
 
 
-        Scanner sc = new Scanner(System.in);
-        System.out.println("\n\nEnter your encryption here:");
+//        Scanner sc = new Scanner(System.in);
+//        System.out.println("\n\nEnter your encryption here:");
+//
+//        String encryptedString = sc.nextLine();
 
-        String encryptedString = sc.nextLine();
-
-        RoomChecker.decipher(encryptedString);
+        //RoomChecker.decipher(encryptedString);
 
       //  System.out.println("\nDistance: " + BunnyPositioningSystem.walkUntilVisitedGetDistanceFromHQ(directionsList) + " blocks");
 
